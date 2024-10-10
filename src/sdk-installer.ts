@@ -5,7 +5,7 @@ import * as tc from '@actions/tool-cache';
 import * as fs from 'fs';
 
 const BUILD_TOOLS_VERSION = '35.0.0';
-// SDK command-line tools 16.0
+const CMDLINE_TOOLS_VERSION = '16.0'; // the downloads immediately below should correspond to this version
 const CMDLINE_TOOLS_URL_MAC = 'https://dl.google.com/android/repository/commandlinetools-mac-12266719_latest.zip';
 const CMDLINE_TOOLS_URL_LINUX = 'https://dl.google.com/android/repository/commandlinetools-linux-12266719_latest.zip';
 
@@ -26,6 +26,16 @@ export async function installAndroidSdk(apiLevel: string, target: string, arch: 
     }
 
     const cmdlineToolsPath = `${process.env.ANDROID_HOME}/cmdline-tools`;
+
+    // it may happen that cmdlineToolsPath exists, but is older than desired
+    if (fs.existsSync(cmdlineToolsPath)) {
+      const cmdlineToolsOutput = await exec.getExecOutput(`sh -c "${cmdlineToolsPath}/latest/sdkmanager --version"`);
+      if (!cmdlineToolsOutput.stdout.includes(CMDLINE_TOOLS_VERSION)) {
+        console.log(`cmdline-tools is version ${cmdlineToolsOutput.stdout.trim()} instead of ${CMDLINE_TOOLS_VERSION}. Removing.`);
+        await exec.exec(`sh -c \\"rm -fr ${cmdlineToolsPath}"`);
+      }
+    }
+
     if (!fs.existsSync(cmdlineToolsPath)) {
       console.log('Installing new cmdline-tools.');
       const sdkUrl = isOnMac ? CMDLINE_TOOLS_URL_MAC : CMDLINE_TOOLS_URL_LINUX;
