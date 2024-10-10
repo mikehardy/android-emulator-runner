@@ -33,28 +33,28 @@ export async function launchEmulator(
       const sdcardPathOrSizeOption = sdcardPathOrSize.trim() !== '' ? `--sdcard '${sdcardPathOrSize}'` : '';
       console.log(`Creating AVD.`);
       await exec.exec(
-        `sh -c \\"echo no | avdmanager create avd --force -n "${avdName}" --abi '${target}/${arch}' --package 'system-images;android-${apiLevel};${target};${arch}' ${profileOption} ${sdcardPathOrSizeOption}"`
+        `sh -c \\"echo no | avdmanager create avd --force -n "${avdName}" --path "${avdPath}" --abi '${target}/${arch}' --package 'system-images;android-${apiLevel};${target};${arch}' ${profileOption} ${sdcardPathOrSizeOption}"`
       );
     }
 
     if (cores) {
-      await exec.exec(`sh -c \\"printf 'hw.cpu.ncore=${cores}\n' >> ${process.env.ANDROID_AVD_HOME}/"${avdName}".avd"/config.ini`);
+      await exec.exec(`sh -c \\"printf 'hw.cpu.ncore=${cores}\n' >> ${avdPath}"/config.ini`);
     }
 
     if (ramSize) {
-      await exec.exec(`sh -c \\"printf 'hw.ramSize=${ramSize}\n' >> ${process.env.ANDROID_AVD_HOME}/"${avdName}".avd"/config.ini`);
+      await exec.exec(`sh -c \\"printf 'hw.ramSize=${ramSize}\n' >> ${avdPath}"/config.ini`);
     }
 
     if (heapSize) {
-      await exec.exec(`sh -c \\"printf 'hw.heapSize=${heapSize}\n' >> ${process.env.ANDROID_AVD_HOME}/"${avdName}".avd"/config.ini`);
+      await exec.exec(`sh -c \\"printf 'hw.heapSize=${heapSize}\n' >> ${avdPath}"/config.ini`);
     }
 
     if (enableHardwareKeyboard) {
-      await exec.exec(`sh -c \\"printf 'hw.keyboard=yes\n' >> ${process.env.ANDROID_AVD_HOME}/"${avdName}".avd"/config.ini`);
+      await exec.exec(`sh -c \\"printf 'hw.keyboard=yes\n' >> ${avdPath}"/config.ini`);
     }
 
     if (diskSize) {
-      await exec.exec(`sh -c \\"printf 'disk.dataPartition.size=${diskSize}\n' >> ${process.env.ANDROID_AVD_HOME}/"${avdName}".avd"/config.ini`);
+      await exec.exec(`sh -c \\"printf 'disk.dataPartition.size=${diskSize}\n' >> ${avdPath}"/config.ini`);
     }
 
     // turn off hardware acceleration on Linux
