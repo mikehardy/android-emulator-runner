@@ -31,11 +31,15 @@ export async function launchEmulator(
     if (!fs.existsSync(avdPath) || forceAvdCreation) {
       const profileOption = profile.trim() !== '' ? `--device '${profile}'` : '';
       const sdcardPathOrSizeOption = sdcardPathOrSize.trim() !== '' ? `--sdcard '${sdcardPathOrSize}'` : '';
+      console.log('AVD list: ' + (await exec.getExecOutput(`sh -c "avdmanager list avd"`)).stdout.trim());
       console.log(`Creating AVD.`);
       await exec.exec(
-        `sh -c \\"echo no | avdmanager create avd --force -n "${avdName}" --path "${avdPath}" --abi '${target}/${arch}' --package 'system-images;android-${apiLevel};${target};${arch}' ${profileOption} ${sdcardPathOrSizeOption}"`
+        `sh -c \\"echo no | avdmanager create avd --force -n "${avdName}" --abi '${target}/${arch}' --package 'system-images;android-${apiLevel};${target};${arch}' ${profileOption} ${sdcardPathOrSizeOption}"`
       );
     }
+
+    console.log('AVD list: ' + (await exec.getExecOutput(`sh -c "avdmanager list avd"`)).stdout.trim());
+    console.log('emulator list: ' + (await exec.getExecOutput(`sh -c "${process.env.ANDROID_HOME}/emulator/emulator -list-avds"`)).stdout.trim());
 
     if (cores) {
       await exec.exec(`sh -c \\"printf 'hw.cpu.ncore=${cores}\n' >> ${avdPath}"/config.ini`);
