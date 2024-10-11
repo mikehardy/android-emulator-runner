@@ -53,7 +53,7 @@ export async function installAndroidSdk(apiLevel: string, target: string, arch: 
     // set standard AVD home and path variables
     core.exportVariable('ANDROID_USER_HOME', `${process.env.HOME}/.android`);
     core.exportVariable('ANDROID_EMULATOR_HOME', process.env.ANDROID_USER_HOME);
-    core.exportVariable('ANDROID_AVD_HOME', `${process.env.ANDROID_AVD_HOME}/avd`);
+    core.exportVariable('ANDROID_AVD_HOME', `${process.env.ANDROID_EMULATOR_HOME}/avd`);
 
     // accept all Android SDK licenses
     await exec.exec(`sh -c \\"yes | sdkmanager --licenses > /dev/null"`);
